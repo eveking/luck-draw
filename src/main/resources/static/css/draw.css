@@ -1,0 +1,90 @@
+html, body {
+    height: 100%;
+    max-width: 720px;
+    padding: 0;
+    margin: 0 auto;
+    font-family: "Helvetica Neue", Helvetica, STHeiTi, sans-serif;
+    overflow: hidden;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+em {
+    font-style: normal;
+}
+
+.lottery {
+    width: 100%;
+    height: 100%;
+    /*background: url(/img/draw/cj-bg.jpg) no-repeat 0 / 100%;*/
+    position: relative;
+}
+.bg-img{
+    width: 100%;
+    height: 100%;
+}
+.lottery .smoke {
+    width: 70%;
+    position: absolute;
+    top: 70%;
+    left: 15%;
+    z-index: 10;
+}
+
+.lottery .smoke img {
+    width: 100%;
+}
+
+.lottery .not img, .lottery .in img, .lottery .draw img {
+    width: 100%;
+}
+
+.lottery .not {
+    width: 70%;
+    position: absolute;
+    top: 60%;
+    left: 15%;
+    display: none;
+    animation: sca 1s linear;
+    transform: scale(1);
+    z-index: 10;
+}
+
+.lottery .in{
+    display: none;
+    width: 65%;
+    position: absolute;
+    top: 60%;
+    left: 17.5%;
+    animation: sca 1s linear;
+    transform: scale(1);
+    z-index: 10;
+}
+
+.lottery .draw {
+    display: none;
+    width: 70%;
+    position: absolute;
+    top: 65%;
+    left: 15%;
+    animation: sca 1s linear;
+    transform: scale(1);
+    z-index: 10;
+}
+
+@keyframes sca {
+    0% {
+        transform: scale(0.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

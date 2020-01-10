@@ -1,0 +1,238 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: "微软雅黑", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+em {
+    font-style: normal;
+}
+
+.layui-layer-msg{
+    z-index: 101;
+}
+
+.lottery {
+    width: 100%;
+    height: 100%;
+    background: url(/img/index/draw.jpg) no-repeat 0 0 / cover;
+    text-align: center;
+}
+
+.lottery .people{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 200px;
+    text-align: left;
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFEB3B;
+}
+
+.lottery .people .cz{
+    font-size: 12px;
+    padding: 4px 0;
+}
+
+.lottery .people .cz a{
+    color: #F44336;
+}
+
+.lottery .start {
+    position: fixed;
+    width: 100%;
+    height: 132px;
+    left: 0;
+    bottom: 3%;
+}
+
+.lottery .start img {
+    width: 30%;
+    cursor: pointer;
+}
+
+.lottery .draw {
+    position: fixed;
+    display: none;
+    width: 60%;
+}
+
+.lottery .draw .user-dra {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center
+}
+
+
+.lottery .draw .user-dra .user {
+    position: relative;
+    width: 12%;
+    animation: usert 1s linear;
+    transform: scale(1);
+    background: #fff;
+    margin: 20px 5px 0;
+    min-width: 129px;
+    padding: 5px 0;
+}
+
+.lottery .draw .user-dra .user span {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+}
+
+.lottery .draw .user-dra .user span em {
+    display: inline-block;
+    min-width: 60px;
+    padding-left: 15%;
+    text-align-last: justify;
+}
+
+.lottery .draw .user-dra .user .img {
+    width: 90%;
+    height: 62%;
+    margin: 0 auto;
+}
+
+.lottery .draw .user-dra .user .img img {
+    width: 100%;
+    height: 100%;
+}
+
+.lottery .draw .user-dra .user .kang {
+    position: absolute;
+    width: 102%;
+    height: 105%;
+    z-index: 5;
+    top: 0;
+    left: 0;
+}
+
+.lottery .draw .user-dra .user .name {
+}
+
+.lottery .draw .user-dra .user .table {
+}
+
+.lottery .draw .user-dra .user .seat {
+    padding-bottom: 15px;
+}
+
+.timer {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    z-index: 10;
+}
+
+#timer {
+    display: none;
+    text-align: center;
+    animation: tim 1s linear;
+    transform: scale(1)
+}
+
+#timer span {
+    line-height: 400px;
+    font-size: 200px;
+    font-weight: 700;
+    color: #fcf300;
+}
+
+/*.lottery .start{position: fixed;cursor: pointer; display: block; width: 100%; height: 132px; background: url(../img/draw2.png) no-repeat center center; left: 0; bottom: 3%;}*/
+.mack {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9;
+    background: #000;
+    opacity: .5;
+    display: none;
+}
+
+.open {
+    width: 900px;
+    height: 500px;
+    background: url(/img/index/draw1.png) no-repeat;
+    position: fixed;
+    z-index: 9;
+    background-size: 100%;
+    animation: names .7s linear;
+    transform: scale(1);
+    display: none;
+}
+
+.open .inpu {
+    position: absolute;
+    width: 100%;
+    height: 300px;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+}
+
+.open .inpu div {
+    font-size: 26px;
+}
+
+.open .inpu div input {
+    margin-right: 20px;
+    height: 60px;
+    width: 80px;
+    text-align: center;
+    font-size: 30px;
+    border: 1px solid red;
+    outline: none;
+}
+
+.open .inpu p {
+    font-size: 34px;
+    margin: 15px 0 20px;
+}
+
+.open .inpu img {
+    width: 45%;
+    cursor: pointer;
+}
+
+@keyframes names {
+    0% {
+        transform: scale(0.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes usert {
+    0% {
+        transform: scale(3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes tim {
+    0% {
+        transform: scale(5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

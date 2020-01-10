@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>操作页面</title>
+    <!--js-->
+    <script th:src="@{/js/jquery-1.9.1.min.js}" src="/js/jquery-1.9.1.min.js"></script>
+    <script th:src="@{/layer/layer.js}" src="/layer/layer.js"></script>
+
+    <style>
+        .btn-box{
+            width: 80%;
+            margin: 12px auto;
+        }
+
+        .btn-box a+a{
+            float: right;
+        }
+
+        table {
+            background: #FF5722;
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        table th {
+            color: #FFFFFF;
+            padding: 4px 0;
+        }
+
+        table td {
+            background: #FFFFFF;
+            padding: 4px 0;
+        }
+
+        table .userList {
+            display: none;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(function(){
+            operateInfo()
+        });
+
+        function operateInfo() {
+            $.ajax({
+                url: "/operateInfo",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    if(data){
+                        var joinInfo = data.joinInfo;
+                        var n = 0;
+                        for (var key in joinInfo){
+                            n++;
+                            var row = joinInfo[key], row = row ? JSON.parse(row): row;
+                            var tr = '<tr>'
+                                + '  <td>'+ n +'</td>'
+                                + '  <td>'+ row.realName +'</td>'
+                                + '  <td><img src="'+ row.imgUrl +'" /></td>'
+                                + '  <td>'+ row.tableNum +'</td>'
+                                + '  <td>'+ row.seatNum +'</td>'
+                                + '</tr>';
+                            $("#tab .userList").append(tr);
+                        }
+                        if(n === 0){
+                            $("#tab .userList").html('<tr><td colspan="5">暂无数据</td></tr>');
+                        }
+
+                        var drawLists = data.drawLists;
+                        if(drawLists && drawLists.length > 0){
+                            for (var i=0; i<drawLists.length; i++){
+                                var drawList = drawLists[i];
+                                $("#tab .drawList").append('<tr><td colspan="5">第'+ (i+1) +'批</td></tr>');
+                                for (var j=0; j<drawList.length; j++){
+                                    var row = joinInfo[drawList[j]], row = row ? JSON.parse(row): row;
+                                    var tr = '<tr>'
+                                        + '  <td>'+ (j + 1) +'</td>'
+                                        + '  <td>'+ row.realName +'</td>'
+                                        + '  <td><img src="'+ row.imgUrl +'" /></td>'
+                                        + '  <td>'+ row.tableNum +'</td>'
+                                        + '  <td>'+ row.seatNum +'</td>'
+                                        + '</tr>';
+                                    $("#tab .drawList").append(tr);
+                                }
+                            }
+                        }else{
+                            $("#tab .drawList").html('<tr><td colspan="5">暂无数据</td></tr>');
+                        }
+                    }
+                }
+            })
+        }
+
+        function rollback() {
+            layer.confirm("确认清除所有数据吗？", {btn: ['确定', '取消'], title: "提示"}, function (index) {
+                $.ajax({
+                    url: "/rollback",
+                    type: "post",
+                    dataType: "json",
+                    success: function () {
+                        operateInfo();
+                    }
+                });
+                layer.close(index);
+            })
+        }
+        
+        function switchTab() {
+            if($(".drawList:visible").length === 0){
+                $(".drawList").show();
+                $(".userList").hide();
+            }else{
+                $(".drawList").hide();
+                $(".userList").show();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="btn-box">
+        <a href="javascript:rollback()">全部重置</a>
+        <a href="javascript:switchTab()">切换</a>
+    </div>
+    <div>
+        <table id="tab" border="0" cellspacing="1" cellpadding="0">
+            <thead>
+                <th>序号</th>
+                <th>真实姓名</th>
+                <th>微信头像</th>
+                <th>桌号</th>
+                <th>座号</th>
+            </thead>
+            <tbody class="drawList"></tbody>
+            <tbody class="userList"></tbody>
+        </table>
+    </div>
+</body>
+</html>

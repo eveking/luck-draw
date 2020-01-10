@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>微薄利年会抽奖</title>
+
+    <!--css-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/draw.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/layer/mobile/need/layer.css}">
+    <!--js-->
+    <script th:src="@{/js/jquery-1.9.1.min.js}" src="/js/jquery-1.9.1.min.js"></script>
+	<script th:src="@{/layer/mobile/layer.js}" src="/layer/mobile/layer.js"></script>
+	<script th:inline="javascript">
+		var websocket, timeId;
+
+		function socketClient() {
+			//如果浏览器支持WebSocket
+			if (window.WebSocket) {
+				// ws://192.168.1.88:7397  ws://nh.vboly.com:7397
+				websocket = new WebSocket("ws://192.168.1.88:7397/ws");//获得WebSocket对象
+				//当有消息过来的时候触发
+				websocket.onmessage = function (event) {
+					var data = JSON.parse(event.data);
+					if (data.directive == "PACK") {
+						window.location.reload();
+					}
+				}
+				//连接关闭的时候触发
+				websocket.onclose = function () {
+					console.log("连接已关闭")
+					window.clearInterval(timeId);
+					timeId = window.setInterval(socketClient, 5000);
+				}
+				//连接打开的时候触发
+				websocket.onopen = function () {
+					console.log("连接已开启")
+					timeId && window.clearInterval(timeId);
+				}
+			} else {
+				layer.open({content: '浏览器不支持WebSocket', skin: 'msg', time: 2});
+			}
+		}
+
+        $(function () {
+            socketClient();
+            if ([[${isLucky}]]) {
+                $(".smoke").hide();
+                $(".draw").show();
+            }
+
+            $(".smoke").on("click", luckyDraw);
+        });
+
+        function luckyDraw() {
+            $.ajax({
+                url: "/robPack",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    if (data) {
+                        console.log(data)
+                        if (data.result == 1) {
+                            $(".smoke").hide();
+                            $(".in").show();
+                        } else if (data.result == -3) {
+
+                        } else if (data.result == -4) {
+                            $(".smoke").hide();
+                            $(".not").show();
+                        } else {
+                            layer.open({content: data.msg, skin: 'msg', time: 2});
+                        }
+                    } else {
+                        $(".smoke").hide();
+                        $(".not").show();
+                    }
+                }
+            })
+        }
+	</script>
+</head>
+<body>
+	<div class="lottery">
+		<img class="bg-img" src="img/draw/cj-bg.jpg" />
+		<span class="smoke"><img src="img/draw/cj-an.png"/></span>
+		<span class="not"><img src="img/draw/noget.png"/></span>
+		<span class="in"><img src="img/draw/yesgo.png"/></span>
+
+		<span class="draw"><img src="img/draw/yes-draw.png"/></span>
+
+	</div>
+</body>
+</html>

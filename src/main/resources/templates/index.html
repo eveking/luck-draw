@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>微薄利年会抽奖</title>
+
+		<!--css-->
+		<link rel="stylesheet" type="text/css" th:href="@{/css/index.css}"/>
+		<!--js-->
+		<script th:src="@{/js/jquery-1.9.1.min.js}" src="/js/jquery-1.9.1.min.js"></script>
+		<script th:src="@{/layer/layer.js}" src="/layer/layer.js"></script>
+	</head>
+	<body>
+	<div class="lottery">
+		<div class="people">
+			<p>已参与人数：<em id="joinNum">0</em></p>
+			<p>已中奖人数：<em id="drawNum">0</em></p>
+			<p>未中奖人数：<em id="notNum">0</em></p>
+            <p class="cz"><a href="javascript:resetDraw()">重置</a></p>
+		</div>
+		<span class="start"><img src="img/index/draw2.png"/></span>
+		<div class="draw">
+			<div class="user-dra"></div>
+		</div>
+	</div>
+	<div class="mack"></div>
+	<div class="timer"></div>
+	<div class="open">
+		<div class="inpu">
+			<div><input id="num" value=""/><label for="num">个</label></div>
+			<p>鼠钱年 鼠你最有钱</p>
+			<img class="smoke" src="img/index/draw3.png" alt="img"/>
+		</div>
+	</div>
+	<!--<div onclick="openLucky()" style="position: absolute; top: 0;left: 0;">点击</div>-->
+	</body>
+
+	<script th:inline="javascript">
+		var websocket, timeId;
+
+		function socketClient() {
+			//如果浏览器支持WebSocket
+			if (window.WebSocket) {
+                // ws://192.168.1.88:7397  ws://nh.vboly.com:7397
+                websocket = new WebSocket("ws://192.168.1.88:7397/ws");//获得WebSocket对象
+				//当有消息过来的时候触发
+				websocket.onmessage = function (event) {
+					var data = JSON.parse(event.data);
+					if (data.directive == "DRAW") {
+						openLucky(data)
+					}
+				};
+				//连接关闭的时候触发
+				websocket.onclose = function () {
+					console.log("连接已关闭");
+					window.clearInterval(timeId);
+					timeId = window.setInterval(socketClient, 5000);
+				};
+				//连接打开的时候触发
+				websocket.onopen = function () {
+					console.log("连接已开启");
+					timeId && window.clearInterval(timeId);
+				}
+			} else {
+				layer.msg("浏览器不支持WebSocket", {icon: 7});
+			}
+		}
+
+		function sendMsg(msg) { //发送消息
+			if (window.WebSocket) {
+				if (websocket.readyState == WebSocket.OPEN) { //如果WebSocket是打开状态
+					websocket.send(msg); //send()发送消息
+				}
+			}
+		}
+
+		$(function () {
+			socketClient();
+			getNum();
+
+			$(".start img").on("click", function () {
+				$(".user-dra").html("");
+				$("#num").val("");
+				$(".mack").show();
+				var t = $(".open");
+				t.css({
+					"top": ($(window).height() - t.height()) / 2 + "px",
+					"left": ($(window).width() - t.width()) / 2 + "px"
+				}).show();
+			});
+
+			$(".mack").on("click", function () {
+				$(".open").hide();
+				$(".mack").hide();
+			});
+
+			$(".smoke").on("click", function(){
+				var num = $("#num").val();
+				$.ajax({
+					url: "/insertPack",
+					type: "post",
+					data: {num: num},
+					dataType: "json",
+					beforeSend: function () {
+						var reg = /^[1-9]\d*$/;
+						if(!reg.test(num)){
+							layer.msg("格式不正确！", {icon: 7});
+							return false;
+						}
+					},
+					success: function (data) {
+						if(data && data.result == 1){
+							sendMsg("PACK")
+							setDraw()
+						}else{
+							layer.msg(data.msg, {icon: 2});
+						}
+					}
+				})
+			});
+		});
+
+		var times = 5;
+		function setDraw() {
+            var ui = $('.timer');
+		    if (times == 0) {
+                times = 5;
+                ui.hide();
+                $(".mack").hide();
+                return;
+            }
+            $('.open').hide();
+            ui.css({
+                "top": ($(window).height() - ui.height()) / 2 + "px",
+                "left": ($(window).width() - ui.width()) / 2 + "px"
+            }).show();
+            var ht = '<div id="timer">'
+                + '<span>' + times + '</span>'
+                + '</div>';
+            $('.timer').html(ht);
+            setTimeout("setDraw()", 1000);
+            var ti = $('#timer');
+            ti.css({
+                "top": ($(window).height() - ti.height()) / 2 + "px",
+                "left": ($(window).width() - ti.width()) / 2 + "px"
+            }).show();
+            times--;
+		}
+
+		function openLucky(data) {
+			setTimeout(function () {
+                var html = '<div class="user">'
+					+ '  <img src="img/index/kuang.png" class="kang">'
+                    + '  <span class="img"><img src="' + data.imgUrl + '" alt="img"/></span>'
+                    + '  <span class="name"><em>姓名：</em>' + data.realName + '</span>'
+                    + '  <span class="table"><em>桌号：</em>' + data.tableNum + '</span>'
+                    + '  <span class="seat"><em>座位号：</em>' + data.seatNum + '</span>'
+                    + '</div>';
+				$(".user-dra").append(html);
+				setTimeout(function () {
+					var p = $(".draw");
+					p.css({
+						"top": ($(window).height() - p.height()) / 2 + "px",
+						"left": ($(window).width() - p.width()) / 2 + "px"
+					}).show();
+				}, 300);
+			}, 1000);
+		}
+
+		function getNum() {
+			$.ajax({
+				url: "/getNum",
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					if(data){
+						$("#joinNum").text(Number(data.notNum) + Number(data.drawNum));
+						$("#drawNum").text(Number(data.drawNum));
+						$("#notNum").text(Number(data.notNum));
+					}
+				}
+			})
+		}
+		
+		function resetDraw() {
+            $.ajax({
+                url: "/reset",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                }
+            })
+            getNum();
+        }
+	</script>
+</html>
